@@ -32,4 +32,29 @@ router.post('/', validateAction, (request, response, next) => {
   next();
 });
 
+router.put(
+  '/:id',
+  validateAction,
+  validateId(actionDb),
+  (request, response) => {
+    const { id } = request.params;
+    const updatedAction = { ...request.body };
+
+    actionDb
+      .update(id, updatedAction)
+      .then((updated) => {
+        updated
+          ? response.status(200).json(updated)
+          : response
+              .status(500)
+              .json({ message: 'Error retrieving the updated action' });
+      })
+      .catch((error) => {
+        response
+          .status(500)
+          .json({ message: 'Error updatingthe action', error });
+      });
+  }
+);
+
 module.exports = router;
