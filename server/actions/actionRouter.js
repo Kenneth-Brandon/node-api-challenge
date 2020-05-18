@@ -57,4 +57,22 @@ router.put(
   }
 );
 
+router.delete('/:id', validateId(actionDb), (request, response) => {
+  const { id } = request.params;
+
+  actionDb
+    .remove(id)
+    .then((deleted) => {
+      deleted ? response.status(200).end() : null;
+    })
+    .catch((error) => {
+      response
+        .status(500)
+        .json({
+          message: 'Error removing the action from the database',
+          error,
+        });
+    });
+});
+
 module.exports = router;
