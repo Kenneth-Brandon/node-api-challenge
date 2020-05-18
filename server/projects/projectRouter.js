@@ -14,8 +14,26 @@ router.get('/', (request, response) => {
 });
 // tested
 
-router.get('/:id', validateId(projectDb), (request, response) => {
-  response.status(200).json(request.item);
+router.get('/:id/actions', validateId(projectDb), (request, response) => {
+  const { id } = request.params;
+
+  projectDb
+    .getProjectActions(id)
+    .then((actions) => {
+      actions.length
+        ? response.status(200).json(actions)
+        : response
+            .status(404)
+            .json({ message: 'No action found for this project' });
+    })
+    .catch((error) => {
+      response
+        .status(500)
+        .json({
+          message: 'Error retrieving the actions for this project',
+          error,
+        });
+    });
 });
 
 router.post('/', validateProject, (request, response, next) => {
