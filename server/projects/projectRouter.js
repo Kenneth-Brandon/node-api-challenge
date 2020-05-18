@@ -18,7 +18,7 @@ router.get('/:id', validateId(projectDb), (request, response) => {
   response.status(200).json(request.item);
 });
 
-router.post('/', validateProject, (request, response) => {
+router.post('/', validateProject, (request, response, next) => {
   const project = request.body;
 
   projectDb
@@ -31,6 +31,7 @@ router.post('/', validateProject, (request, response) => {
         .status(500)
         .json({ message: 'Error adding project to the database', error });
     });
+  next();
 });
 // tested
 
@@ -38,7 +39,7 @@ router.put(
   '/:id',
   validateProject,
   validateId(projectDb),
-  (request, response) => {
+  (request, response, next) => {
     const { id } = request.params;
     const updatedProject = { ...request.body };
 
@@ -56,7 +57,25 @@ router.put(
           .status(500)
           .json({ message: 'Error updating the project', error });
       });
+    next();
   }
 );
+
+router.delete('/:id', validateId(projectDb), (request, response, next) => {
+  const { id } = request.params;
+
+  projectDb
+    .remove(id)
+    .then((deleted) => {
+      deleted ? response.status(200).end() : null;
+    })
+    .catch((error) => {
+      response.status(500).json({
+        message: 'Error removing the project from the database',
+        error,
+      });
+    });
+  next();
+});
 
 module.exports = router;
