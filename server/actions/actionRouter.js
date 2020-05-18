@@ -16,7 +16,7 @@ router.get('/:id', validateId(actionDb), (request, response) => {
   response.status(200).json(request.item);
 });
 
-router.post('/', validateAction, (request, response, next) => {
+router.post('/', validateAction, (request, response) => {
   action = request.body;
 
   actionDb
@@ -27,9 +27,8 @@ router.post('/', validateAction, (request, response, next) => {
     .catch((error) => {
       response
         .status(500)
-        .json({ message: 'Error adding action to the database' });
+        .json({ message: 'Error adding action to the database', error });
     });
-  next();
 });
 
 router.put(
@@ -52,7 +51,7 @@ router.put(
       .catch((error) => {
         response
           .status(500)
-          .json({ message: 'Error updatingthe action', error });
+          .json({ message: 'Error updating the action', error });
       });
   }
 );
@@ -66,12 +65,10 @@ router.delete('/:id', validateId(actionDb), (request, response) => {
       deleted ? response.status(200).end() : null;
     })
     .catch((error) => {
-      response
-        .status(500)
-        .json({
-          message: 'Error removing the action from the database',
-          error,
-        });
+      response.status(500).json({
+        message: 'Error removing the action from the database',
+        error,
+      });
     });
 });
 

@@ -1,14 +1,15 @@
 const logger = (request, response, next) => {
-  console.log(`\n*** Server Logger ***\n
+  console.log(
+    `\n*** Server Logger ***\n 
     Request Method: ${request.method}
     Request URL: ${request.originalUrl}
-    TimeStamp: ${new Date(Number(new Date()))}`);
+    TimeStamp: ${new Date(Number(new Date()))}`
+  );
   next();
 };
 
 const validateId = (db) => (request, response, next) => {
   const { id } = request.params;
-  console.log(params);
 
   db.get(id)
     .then((item) => {
@@ -18,9 +19,7 @@ const validateId = (db) => (request, response, next) => {
       next();
     })
     .catch((error) => {
-      response
-        .status(500)
-        .json({ errorMessage: "Couldn't validate id", error });
+      response.status(500).json({ message: 'Could not validate', error });
     });
 };
 
@@ -28,11 +27,10 @@ const validateProject = (request, response, next) => {
   const { body } = request;
 
   JSON.stringify(body) === '{}'
-    ? response.status(400).json({ message: 'Missing project data' })
+    ? response.status(400).json({ message: 'missing project data' })
     : !body.name || !body.description
     ? response.status(400).json({
-        message: `missing required 
-        ${
+        message: `missing required ${
           !body.name ? 'name' : !body.description ? 'description' : null
         } field`,
       })
@@ -43,22 +41,21 @@ const validateAction = (request, response, next) => {
   const { body } = request;
 
   JSON.stringify(body) === '{}'
-    ? response.status(400).json({ message: 'Missing action data' })
+    ? response.status(400).json({ message: 'missing action data' })
     : !body.project_id
     ? response
         .status(400)
-        .json({ message: 'Missing required project_id field' })
+        .json({ message: 'missing required project_id field' })
     : !body.description || !body.notes
     ? response.status(400).json({
-        message: `missing required 
-          ${
-            !body.description ? 'description' : !body.notes ? 'notes' : null
-          } field`,
+        message: `missing required ${
+          !body.description ? 'description' : !body.notes ? 'notes' : null
+        } field`,
       })
-    : !body.description.length > 128
+    : body.description.length > 128
     ? response
         .status(400)
-        .json({ message: 'Description must be 128 characters or fewer' })
+        .json({ message: 'description must be 128 characters or fewer' })
     : next();
 };
 
