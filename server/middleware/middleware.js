@@ -18,7 +18,9 @@ const validateId = (db) => (request, response, next) => {
       next();
     })
     .catch((error) => {
-      response.status(500).json({ errorMessage: "Couldn't validate", error });
+      response
+        .status(500)
+        .json({ errorMessage: "Couldn't validate id", error });
     });
 };
 
@@ -41,9 +43,11 @@ const validateAction = (request, response, next) => {
   const { body } = request;
 
   JSON.stringify(body) === '{}'
-    ? response.status(400).json({ message: 'missing action data' })
+    ? response.status(400).json({ message: 'Missing action data' })
     : !body.project_id
-    ? response.status(400).json({ message: 'missing required project_id' })
+    ? response
+        .status(400)
+        .json({ message: 'Missing required project_id field' })
     : !body.description || !body.notes
     ? response.status(400).json({
         message: `missing required 
@@ -51,10 +55,10 @@ const validateAction = (request, response, next) => {
             !body.description ? 'description' : !body.notes ? 'notes' : null
           } field`,
       })
-    : !body.description.length <= 128
+    : !body.description.length > 128
     ? response
         .status(400)
-        .json({ message: 'description must be 128 characters or fewer' })
+        .json({ message: 'Description must be 128 characters or fewer' })
     : next();
 };
 
